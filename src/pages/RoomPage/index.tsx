@@ -1,6 +1,7 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { HTMLPlyrVideoElement, PlyrCallback } from 'plyr-react';
+import socketIOClient, { Socket } from 'socket.io-client';
 
 import Input from '../../components/Input';
 import Player from '../../components/Player';
@@ -14,29 +15,78 @@ interface IMessage {
 
 const RoomPage: React.FC = () => {
   const ref = useRef<HTMLPlyrVideoElement>(null);
+  const [socket, setSocket] = useState<Socket>();
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<IMessage[]>([]);
+
+  const addMessage = ({ content, owner }: IMessage) => {
+    setMessages((prevMessages) => {
+      const newMessages = [...prevMessages];
+      newMessages.push({
+        owner,
+        content,
+      });
+
+      return newMessages;
+    });
+  };
+
+  useEffect(() => {
+    setSocket(
+      socketIOClient('wss://furkaninanc.com', {
+        transports: ['websocket'],
+        upgrade: false,
+        query: {
+          room: 'lost',
+          username: 'furkan',
+        },
+      })
+    );
+  }, []);
+
+  useEffect(() => {
+    socket?.on('message', (content, owner) => {
+      addMessage({ content, owner });
+    });
+
+    socket?.on('stateChange', (state) => {
+      if (state === 1) {
+        ref?.current?.plyr?.play();
+      } else {
+        ref?.current?.plyr?.pause();
+      }
+    });
+
+    socket?.on('seek', (time) => {
+      ref!.current!.plyr!.currentTime! = time;
+    });
+  }, [socket]);
 
   const onChange = (event: any) => setMessage(event.target.value);
   const onKeyDown = (event: any) => {
     if (event.keyCode === 13) {
-      setMessages((prevMessages) => {
-        const newMessages = [...prevMessages];
-        newMessages.push({
-          owner: 'furkan',
-          content: message,
-        });
-
-        return newMessages;
-      });
-
+      socket?.emit('message', message);
       setMessage('');
     }
   };
-  const onPause: PlyrCallback = useCallback((event) => {}, []);
-  const onPlay: PlyrCallback = useCallback((event) => {}, []);
-  const onSeeked: PlyrCallback = useCallback((event) => {}, []);
-  const onTimeUpdate: PlyrCallback = useCallback((event) => {}, []);
+  const onPause: PlyrCallback = useCallback(() => {
+    socket?.emit('stateChange', false);
+  }, [socket]);
+  const onPlay: PlyrCallback = useCallback(() => {
+    socket?.emit('stateChange', true);
+  }, [socket]);
+  const onSeeked: PlyrCallback = useCallback(
+    (event) => {
+      socket?.emit('seek', event.detail.plyr.currentTime);
+    },
+    [socket]
+  );
+  const onTimeUpdate: PlyrCallback = useCallback(
+    (event) => {
+      socket?.emit('timeupdate', event.detail.plyr.currentTime);
+    },
+    [socket]
+  );
 
   return (
     <div className={styles.wrapper}>
