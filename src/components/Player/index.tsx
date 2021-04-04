@@ -39,6 +39,9 @@ const Player: React.FC<IPlayer> = memo(
     return (
       <>
         <Plyr
+          options={{
+            muted: true,
+          }}
           ref={ref}
           source={{
             type: 'video',
