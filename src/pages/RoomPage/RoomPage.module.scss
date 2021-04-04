@@ -1,0 +1,74 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--black);
+}
+
+.playerContainer {
+  flex-grow: 1;
+}
+
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+  width: var(--s-90);
+  background-color: var(--default);
+}
+
+.brandContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: var(--s-18);
+  border-bottom: var(--s-quarter) solid var(--tertiary);
+  background-color: var(--black);
+}
+
+.logoContainer {
+  height: var(--s-8);
+  width: var(--s-8);
+  margin-right: var(--s-3);
+}
+
+.titleContainer {
+  color: var(--primary);
+  font-size: var(--s-7);
+}
+
+.messagesContainer {
+  overflow-y: auto;
+  height: 100%;
+  padding: var(--s-4);
+}
+
+.messageContainer {
+  padding-bottom: var(--s-5);
+}
+
+.messageContainer:last-of-type {
+  padding-bottom: unset;
+}
+
+.messageOwner {
+  padding-bottom: var(--s-1);
+  font-size: var(--s-5);
+  color: var(--primary);
+}
+
+.messageContent {
+  color: var(--white);
+}
+
+.newMessageContainer {
+  min-height: var(--s-14);
+  border-top: var(--s-quarter) solid var(--tertiary);
+  background-color: var(--black);
+}
+
+.newMessage {
+  background-color: transparent;
+  width: 100%;
+}
