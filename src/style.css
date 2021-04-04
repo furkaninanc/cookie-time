@@ -4,6 +4,20 @@
     'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
 
+  --default: #040404;
+  --primary: #db880c;
+  --secondary: #111010;
+  --tertiary: #444444;
+  --white: #ffffff;
+
+  --s-3: 12px;
+  --s-5: 20px;
+  --s-12: 48px;
+  --s-14: 56px;
+  --s-18: 72px;
+  --s-22: 88px;
+  --s-64: 256px;
+  --s-80: 320px;
 }
 
 body {
