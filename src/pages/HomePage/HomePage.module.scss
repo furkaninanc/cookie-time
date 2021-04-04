@@ -1,0 +1,46 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--default);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--s-12);
+}
+
+.logoContainer {
+  height: var(--s-64);
+  width: var(--s-64);
+  margin-bottom: var(--s-3);
+}
+
+.titleContainer {
+  color: var(--primary);
+  font-size: var(--s-18);
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--s-22);
+}
+
+.formElementContainer {
+  margin-bottom: var(--s-3);
+}
+
+.formElementContainer:last-of-type {
+  margin-bottom: unset;
+}
