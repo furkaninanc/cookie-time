@@ -3,6 +3,8 @@ import { render } from 'react-dom';
 
 import App from './pages/App';
 
+import './style.css';
+
 render(
   <StrictMode>
     <App />
