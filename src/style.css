@@ -39,3 +39,7 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
+.plyr {
+  height: 100%;
+}
