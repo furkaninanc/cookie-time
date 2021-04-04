@@ -9,12 +9,14 @@ const Input: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({
   onChange,
   onKeyDown,
   placeholder,
+  value,
 }) => (
   <input
     className={cs(className, styles.input)}
     onChange={onChange}
     onKeyDown={onKeyDown}
     placeholder={placeholder}
+    value={value}
   />
 );
 
