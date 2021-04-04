@@ -1,5 +1,7 @@
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
+import HomePage from './HomePage';
+
 const App: React.FC = () => (
   <Router>
     <Switch>
@@ -7,7 +9,7 @@ const App: React.FC = () => (
         <div>Room page</div>
       </Route>
       <Route path="/">
-        <div>Home page</div>
+        <HomePage />
       </Route>
     </Switch>
   </Router>
