@@ -7,11 +7,13 @@ import styles from './Input.module.scss';
 const Input: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({
   className,
   onChange,
+  onKeyDown,
   placeholder,
 }) => (
   <input
     className={cs(className, styles.input)}
     onChange={onChange}
+    onKeyDown={onKeyDown}
     placeholder={placeholder}
   />
 );
