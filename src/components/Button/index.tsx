@@ -1,12 +1,19 @@
 import { InputHTMLAttributes } from 'react';
 
+import cs from 'classnames';
+
 import styles from './Button.module.scss';
 
 const Button: React.FC<InputHTMLAttributes<HTMLButtonElement>> = ({
+  className,
   children,
   onClick,
 }) => (
-  <button className={styles.button} onClick={onClick} type="button">
+  <button
+    className={cs(className, styles.button)}
+    onClick={onClick}
+    type="button"
+  >
     {children}
   </button>
 );
