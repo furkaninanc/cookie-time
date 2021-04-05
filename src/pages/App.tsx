@@ -13,7 +13,7 @@ const App: React.FC = () => {
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
-      <Router>
+      <Router basename="cookie">
         <Switch>
           <Route path="/:room">
             <RoomPage />
