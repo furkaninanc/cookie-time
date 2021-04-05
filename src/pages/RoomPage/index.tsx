@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { HTMLPlyrVideoElement, PlyrCallback } from 'plyr-react';
 import socketIOClient, { Socket } from 'socket.io-client';
@@ -6,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import Input from '../../components/Input';
 import Player from '../../components/Player';
+import { useAuthContext } from '../../contexts/AuthContext';
 import logo from '../../logo.svg';
 import styles from './RoomPage.module.scss';
 
@@ -16,7 +18,9 @@ interface IMessage {
 }
 
 const RoomPage: React.FC = () => {
+  const history = useHistory();
   const ref = useRef<HTMLPlyrVideoElement>(null);
+  const { auth } = useAuthContext();
   const [socket, setSocket] = useState<Socket>();
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -55,12 +59,12 @@ const RoomPage: React.FC = () => {
         transports: ['websocket'],
         upgrade: false,
         query: {
-          room: 'lost',
-          username: `furkan_${Math.random()}`,
+          room: auth.room,
+          username: auth.username,
         },
       })
     );
-  }, []);
+  }, [auth]);
 
   useEffect(() => {
     if (playing && initialTime && ref?.current?.plyr?.currentTime) {
@@ -82,6 +86,10 @@ const RoomPage: React.FC = () => {
       );
 
       setInitialTime(time);
+    });
+
+    socket?.on('disconnect', () => {
+      history.push('/');
     });
 
     socket?.on('message:receive', ({ content, id, owner }) => {
@@ -130,7 +138,7 @@ const RoomPage: React.FC = () => {
         ])
       );
     });
-  }, [addSystemMessage, socket]);
+  }, [addSystemMessage, history, socket]);
 
   const onChange = (event: any) => setMessage(event.target.value);
   const onKeyDown = (event: any) => {

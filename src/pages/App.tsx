@@ -1,19 +1,29 @@
+import { useState } from 'react';
 import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 
+import { AuthContext, IAuth } from '../contexts/AuthContext';
 import HomePage from './HomePage';
 import RoomPage from './RoomPage';
 
-const App: React.FC = () => (
-  <Router>
-    <Switch>
-      <Route path="/:room">
-        <RoomPage />
-      </Route>
-      <Route path="/">
-        <HomePage />
-      </Route>
-    </Switch>
-  </Router>
-);
+const App: React.FC = () => {
+  const [auth, setAuth] = useState<IAuth>({
+    username: '',
+    room: '',
+  });
+  return (
+    <AuthContext.Provider value={{ auth, setAuth }}>
+      <Router>
+        <Switch>
+          <Route path="/:room">
+            <RoomPage />
+          </Route>
+          <Route path="/">
+            <HomePage />
+          </Route>
+        </Switch>
+      </Router>
+    </AuthContext.Provider>
+  );
+};
 
 export default App;
