@@ -57,6 +57,9 @@ const Chat: React.FC = () => {
     socket?.on('player:seek', ({ username }) =>
       addSystemMessage(`${username} video zamanını değiştirdi`)
     );
+    socket?.on('player:speed', ({ speed, username }) =>
+      addSystemMessage(`${username} video hızını ${speed}x olarak değiştirdi`)
+    );
     socket?.on('player:state', ({ state, username }) => {
       if (state === 1) {
         addSystemMessage(`${username} videoyu başlattı`);
