@@ -7,9 +7,10 @@ import RoomPage from './RoomPage';
 
 const App: React.FC = () => {
   const [auth, setAuth] = useState<IAuth>({
-    username: '',
-    room: '',
+    username: localStorage.username || '',
+    room: localStorage.room || '',
   });
+
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
       <Router>

@@ -22,18 +22,22 @@ const HomePage: React.FC = () => {
         <div className={styles.formContainer}>
           <div className={styles.formElementContainer}>
             <Input
-              onChange={(event) =>
-                setAuth({ ...auth, username: event.target.value })
-              }
+              onChange={(event) => {
+                setAuth({ ...auth, username: event.target.value });
+                localStorage.setItem('username', event.target.value);
+              }}
               placeholder="Kullanıcı adı"
+              value={auth.username}
             />
           </div>
           <div className={styles.formElementContainer}>
             <Input
-              onChange={(event) =>
-                setAuth({ ...auth, room: event.target.value })
-              }
+              onChange={(event) => {
+                setAuth({ ...auth, room: event.target.value });
+                localStorage.setItem('room', event.target.value);
+              }}
               placeholder="Oda adı"
+              value={auth.room}
             />
           </div>
           <div className={styles.formElementContainer}>
