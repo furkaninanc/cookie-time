@@ -59,6 +59,8 @@ const Player: React.FC = () => {
       } else {
         ref?.current?.plyr?.pause();
       }
+
+      preventEmit = false;
     });
 
     socket?.on('player:seek', ({ time }) => {
@@ -79,16 +81,12 @@ const Player: React.FC = () => {
     if (!preventEmit) {
       socket?.emit('player:state', { state: 0 });
     }
-
-    preventEmit = false;
   }, [socket]);
 
   const onPlay: PlyrCallback = useCallback(() => {
     if (!preventEmit) {
       socket?.emit('player:state', { state: 1 });
     }
-
-    preventEmit = false;
   }, [socket]);
 
   const onSeeked: PlyrCallback = useCallback(
