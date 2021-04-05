@@ -39,7 +39,6 @@ const PlyrWrapper: React.FC<IPlyrWrapper> = memo(
       <>
         <Plyr
           options={{
-            autoplay: true,
             muted: true,
           }}
           ref={ref}
