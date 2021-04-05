@@ -9,8 +9,9 @@ import PlyrWrapper from '../PlyrWrapper';
 import styles from './Player.module.scss';
 
 let initialized = false;
-let preventStateEmit = false;
 let preventSeekEmit = false;
+let preventSpeedEmit = false;
+let preventStateEmit = false;
 
 const Player: React.FC = () => {
   const history = useHistory();
@@ -78,6 +79,13 @@ const Player: React.FC = () => {
       }
     });
 
+    socket?.on('player:speed', ({ speed }) => {
+      if (ref?.current?.plyr) {
+        preventSpeedEmit = true;
+        ref.current.plyr.speed = speed;
+      }
+    });
+
     socket?.on('player:video', ({ video }) => setSource(video));
   }, [history, socket]);
 
@@ -99,6 +107,17 @@ const Player: React.FC = () => {
       }
 
       preventStateEmit = false;
+    },
+    [socket]
+  );
+
+  const onRateChange: PlyrCallback = useCallback(
+    (event) => {
+      if (!preventSpeedEmit) {
+        socket?.emit('player:speed', { speed: event.detail.plyr.speed });
+      }
+
+      preventSpeedEmit = false;
     },
     [socket]
   );
@@ -128,6 +147,7 @@ const Player: React.FC = () => {
       <PlyrWrapper
         onPause={onPause}
         onPlay={onPlay}
+        onRateChange={onRateChange}
         onSeeked={onSeeked}
         onTimeUpdate={onTimeUpdate}
         ref={ref}

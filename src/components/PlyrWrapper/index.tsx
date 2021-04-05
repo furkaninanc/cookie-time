@@ -6,46 +6,52 @@ import 'plyr-react/dist/plyr.css';
 interface IPlyrWrapper {
   onPause: PlyrCallback;
   onPlay: PlyrCallback;
+  onRateChange: PlyrCallback;
   onSeeked: PlyrCallback;
   onTimeUpdate: PlyrCallback;
   ref: RefObject<HTMLPlyrVideoElement>;
 }
 
 const PlyrWrapper: React.FC<IPlyrWrapper> = memo(
-  forwardRef(({ onPause, onPlay, onSeeked, onTimeUpdate }, ref) => {
-    useEffect(() => {
-      // @ts-ignore
-      const plyr = ref?.current?.plyr;
+  forwardRef(
+    ({ onPause, onPlay, onRateChange, onSeeked, onTimeUpdate }, ref) => {
+      useEffect(() => {
+        // @ts-ignore
+        const plyr = ref?.current?.plyr;
 
-      const pauseEvent: PlyrCallback = onPause;
-      const playEvent: PlyrCallback = onPlay;
-      const seekedEvent: PlyrCallback = onSeeked;
-      const timeUpdateEvent: PlyrCallback = onTimeUpdate;
+        const pauseEvent: PlyrCallback = onPause;
+        const playEvent: PlyrCallback = onPlay;
+        const rateChangeEvent: PlyrCallback = onRateChange;
+        const seekedEvent: PlyrCallback = onSeeked;
+        const timeUpdateEvent: PlyrCallback = onTimeUpdate;
 
-      plyr?.on('pause', pauseEvent);
-      plyr?.on('play', playEvent);
-      plyr?.on('seeked', seekedEvent);
-      plyr?.on('timeupdate', timeUpdateEvent);
+        plyr?.on('pause', pauseEvent);
+        plyr?.on('play', playEvent);
+        plyr?.on('ratechange', rateChangeEvent);
+        plyr?.on('seeked', seekedEvent);
+        plyr?.on('timeupdate', timeUpdateEvent);
 
-      return () => {
-        plyr?.off('pause', pauseEvent);
-        plyr?.off('play', playEvent);
-        plyr?.off('seeked', seekedEvent);
-        plyr?.off('timeupdate', timeUpdateEvent);
-      };
-    }, [onPause, onPlay, onSeeked, onTimeUpdate, ref]);
+        return () => {
+          plyr?.off('pause', pauseEvent);
+          plyr?.off('play', playEvent);
+          plyr?.off('ratechange', rateChangeEvent);
+          plyr?.off('seeked', seekedEvent);
+          plyr?.off('timeupdate', timeUpdateEvent);
+        };
+      }, [onPause, onPlay, onRateChange, onSeeked, onTimeUpdate, ref]);
 
-    return (
-      <>
-        <Plyr
-          options={{
-            muted: true,
-          }}
-          ref={ref}
-        />
-      </>
-    );
-  })
+      return (
+        <>
+          <Plyr
+            options={{
+              muted: true,
+            }}
+            ref={ref}
+          />
+        </>
+      );
+    }
+  )
 );
 
 export default PlyrWrapper;
