@@ -9,7 +9,8 @@ import PlyrWrapper from '../PlyrWrapper';
 import styles from './Player.module.scss';
 
 let initialized = false;
-let preventEmit = false;
+let preventStateEmit = false;
+let preventSeekEmit = false;
 
 const Player: React.FC = () => {
   const history = useHistory();
@@ -34,9 +35,20 @@ const Player: React.FC = () => {
     }
   };
 
+  const setState = (state: number) => {
+    if (state === 1 && !ref?.current?.plyr?.playing) {
+      preventStateEmit = true;
+      ref?.current?.plyr?.play();
+    } else if (state === 0 && ref?.current?.plyr?.playing) {
+      preventStateEmit = true;
+      ref?.current?.plyr?.pause();
+    }
+  };
+
   useEffect(() => {
-    socket?.on('join', ({ time, video }) => {
+    socket?.on('join', ({ state, time, video }) => {
       setSource(video);
+      setState(state);
 
       const timer = setInterval(() => {
         if (
@@ -44,6 +56,7 @@ const Player: React.FC = () => {
           ref.current.plyr.source === video &&
           ref.current.plyr.buffered > 0
         ) {
+          preventSeekEmit = true;
           ref.current.plyr.currentTime = time;
           initialized = true;
           clearInterval(timer);
@@ -51,53 +64,48 @@ const Player: React.FC = () => {
       }, 100);
     });
 
-    socket?.on('disconnect', () => {
-      history.push('/');
-    });
+    socket?.on('disconnect', () => history.push('/'));
 
-    socket?.on('player:state', async ({ state }) => {
-      preventEmit = true;
-
-      if (state === 1) {
-        await ref?.current?.plyr?.play();
-      } else {
-        await ref?.current?.plyr?.pause();
-      }
-
-      preventEmit = false;
-    });
+    socket?.on('player:state', ({ state }) => setState(state));
 
     socket?.on('player:seek', ({ time }) => {
       if (
         ref?.current?.plyr?.currentTime &&
         Math.abs(ref.current.plyr.currentTime - time) > 2
       ) {
+        preventSeekEmit = true;
         ref.current.plyr.currentTime = time;
       }
     });
 
-    socket?.on('player:video', ({ video }) => {
-      setSource(video);
-    });
+    socket?.on('player:video', ({ video }) => setSource(video));
   }, [history, socket]);
 
   const onPause: PlyrCallback = useCallback(() => {
-    if (!preventEmit) {
+    if (!preventStateEmit) {
       socket?.emit('player:state', { state: 0 });
     }
+
+    preventStateEmit = false;
   }, [socket]);
 
   const onPlay: PlyrCallback = useCallback(() => {
-    if (!preventEmit) {
+    if (!preventStateEmit) {
       socket?.emit('player:state', { state: 1 });
     }
+
+    preventStateEmit = false;
   }, [socket]);
 
   const onSeeked: PlyrCallback = useCallback(
     (event) => {
       if (initialized) {
-        socket?.emit('player:seek', { time: event.detail.plyr.currentTime });
+        if (!preventSeekEmit) {
+          socket?.emit('player:seek', { time: event.detail.plyr.currentTime });
+        }
       }
+
+      preventSeekEmit = false;
     },
     [socket]
   );
