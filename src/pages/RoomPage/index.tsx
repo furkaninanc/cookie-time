@@ -11,6 +11,8 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import logo from '../../logo.svg';
 import styles from './RoomPage.module.scss';
 
+let preventEmit = false;
+
 interface IMessage {
   content: string;
   id: string;
@@ -105,6 +107,8 @@ const RoomPage: React.FC = () => {
     });
 
     socket?.on('player:state', ({ state, username }) => {
+      preventEmit = true;
+
       if (state === 1) {
         ref?.current?.plyr?.play();
         addSystemMessage(`${username} videoyu başlattı`);
@@ -154,11 +158,21 @@ const RoomPage: React.FC = () => {
   };
   const onPause: PlyrCallback = useCallback(() => {
     setPlaying(false);
-    socket?.emit('player:state', { state: 0 });
+
+    if (!preventEmit) {
+      socket?.emit('player:state', { state: 0 });
+    }
+
+    preventEmit = false;
   }, [socket]);
   const onPlay: PlyrCallback = useCallback(() => {
     setPlaying(true);
-    socket?.emit('player:state', { state: 1 });
+
+    if (!preventEmit) {
+      socket?.emit('player:state', { state: 1 });
+    }
+
+    preventEmit = false;
   }, [socket]);
   const onSeeked: PlyrCallback = useCallback(
     (event) => {
