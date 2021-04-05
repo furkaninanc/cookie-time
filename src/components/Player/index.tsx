@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { HTMLPlyrVideoElement, PlyrCallback } from 'plyr-react';
 
 import { useSocketContext } from '../../contexts/SocketContext';
+import { getVideoId } from '../../utils/youtube';
 import PlyrWrapper from '../PlyrWrapper';
 import styles from './Player.module.scss';
 
@@ -17,13 +18,16 @@ const Player: React.FC = () => {
 
   const setSource = (video: string) => {
     if (ref?.current?.plyr) {
+      const youtubeId = getVideoId(video);
+
       ref.current.plyr.source = {
         type: 'video',
         sources: [
           {
-            src: video,
-            type: 'video/mp4',
-            size: 720,
+            src: youtubeId || video,
+            ...(!youtubeId
+              ? { type: 'video/mp4', size: 720 }
+              : { provider: 'youtube' }),
           },
         ],
       };
