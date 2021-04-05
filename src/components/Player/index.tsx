@@ -36,6 +36,13 @@ const Player: React.FC = () => {
     }
   };
 
+  const setSpeed = (speed: number) => {
+    if (ref?.current?.plyr && ref.current.plyr.speed !== speed) {
+      preventSpeedEmit = true;
+      ref.current.plyr.speed = speed;
+    }
+  };
+
   const setState = (state: number) => {
     if (state === 1 && !ref?.current?.plyr?.playing) {
       preventStateEmit = true;
@@ -47,7 +54,7 @@ const Player: React.FC = () => {
   };
 
   useEffect(() => {
-    socket?.on('join', ({ state, time, video }) => {
+    socket?.on('join', ({ speed, state, time, video }) => {
       setSource(video);
       setState(state);
 
@@ -60,6 +67,7 @@ const Player: React.FC = () => {
           preventSeekEmit = true;
           ref.current.plyr.currentTime = time;
           initialized = true;
+          setSpeed(speed);
           clearInterval(timer);
         }
       }, 100);
@@ -79,12 +87,7 @@ const Player: React.FC = () => {
       }
     });
 
-    socket?.on('player:speed', ({ speed }) => {
-      if (ref?.current?.plyr) {
-        preventSpeedEmit = true;
-        ref.current.plyr.speed = speed;
-      }
-    });
+    socket?.on('player:speed', ({ speed }) => setSpeed(speed));
 
     socket?.on('player:video', ({ video }) => setSource(video));
   }, [history, socket]);
@@ -113,8 +116,10 @@ const Player: React.FC = () => {
 
   const onRateChange: PlyrCallback = useCallback(
     (event) => {
-      if (!preventSpeedEmit) {
-        socket?.emit('player:speed', { speed: event.detail.plyr.speed });
+      if (initialized) {
+        if (!preventSpeedEmit) {
+          socket?.emit('player:speed', { speed: event.detail.plyr.speed });
+        }
       }
 
       preventSpeedEmit = false;
