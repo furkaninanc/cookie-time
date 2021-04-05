@@ -1,57 +1,120 @@
-import { forwardRef, memo, RefObject, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 
-import Plyr, { HTMLPlyrVideoElement, PlyrCallback } from 'plyr-react';
-import 'plyr-react/dist/plyr.css';
+import { HTMLPlyrVideoElement, PlyrCallback } from 'plyr-react';
 
-interface IPlayer {
-  onPause: PlyrCallback;
-  onPlay: PlyrCallback;
-  onSeeked: PlyrCallback;
-  onTimeUpdate: PlyrCallback;
-  sources: string;
-  ref: RefObject<HTMLPlyrVideoElement>;
-}
+import { useSocketContext } from '../../contexts/SocketContext';
+import PlyrWrapper from '../PlyrWrapper';
+import styles from './Player.module.scss';
 
-const Player: React.FC<IPlayer> = memo(
-  forwardRef(({ onPause, onPlay, onSeeked, onTimeUpdate, sources }, ref) => {
-    useEffect(() => {
-      // @ts-ignore
-      const plyr = ref?.current?.plyr;
+let initialized = false;
+let preventEmit = false;
 
-      const pauseEvent: PlyrCallback = onPause;
-      const playEvent: PlyrCallback = onPlay;
-      const seekedEvent: PlyrCallback = onSeeked;
-      const timeUpdateEvent: PlyrCallback = onTimeUpdate;
+const Player: React.FC = () => {
+  const history = useHistory();
+  const ref = useRef<HTMLPlyrVideoElement>(null);
+  const { socket } = useSocketContext();
 
-      plyr?.on('pause', pauseEvent);
-      plyr?.on('play', playEvent);
-      plyr?.on('seeked', seekedEvent);
-      plyr?.on('timeupdate', timeUpdateEvent);
-
-      return () => {
-        plyr?.off('pause', pauseEvent);
-        plyr?.off('play', playEvent);
-        plyr?.off('seeked', seekedEvent);
-        plyr?.off('timeupdate', timeUpdateEvent);
+  const setSource = (video: string) => {
+    if (ref?.current?.plyr) {
+      ref.current.plyr.source = {
+        type: 'video',
+        sources: [
+          {
+            src: video,
+            type: 'video/mp4',
+            size: 720,
+          },
+        ],
       };
-    }, [onPause, onPlay, onSeeked, onTimeUpdate, ref]);
+    }
+  };
 
-    return (
-      <>
-        <Plyr
-          options={{
-            autoplay: true,
-            muted: true,
-          }}
-          ref={ref}
-          source={{
-            type: 'video',
-            sources: JSON.parse(sources),
-          }}
-        />
-      </>
-    );
-  })
-);
+  useEffect(() => {
+    socket?.on('join', ({ time, video }) => {
+      setSource(video);
+
+      const timer = setInterval(() => {
+        if (
+          ref?.current?.plyr &&
+          ref.current.plyr.source === video &&
+          ref.current.plyr.buffered > 0
+        ) {
+          ref.current.plyr.currentTime = time;
+          initialized = true;
+          clearInterval(timer);
+        }
+      }, 100);
+    });
+
+    socket?.on('disconnect', () => {
+      history.push('/');
+    });
+
+    socket?.on('player:state', ({ state }) => {
+      preventEmit = true;
+
+      if (state === 1) {
+        ref?.current?.plyr?.play();
+      } else {
+        ref?.current?.plyr?.pause();
+      }
+    });
+
+    socket?.on('player:seek', ({ time }) => {
+      if (
+        ref?.current?.plyr?.currentTime &&
+        Math.abs(ref.current.plyr.currentTime - time) > 2
+      ) {
+        ref.current.plyr.currentTime = time;
+      }
+    });
+
+    socket?.on('player:video', ({ video }) => {
+      setSource(video);
+    });
+  }, [history, socket]);
+
+  const onPause: PlyrCallback = useCallback(() => {
+    if (!preventEmit) {
+      socket?.emit('player:state', { state: 0 });
+    }
+
+    preventEmit = false;
+  }, [socket]);
+  const onPlay: PlyrCallback = useCallback(() => {
+    if (!preventEmit) {
+      socket?.emit('player:state', { state: 1 });
+    }
+
+    preventEmit = false;
+  }, [socket]);
+  const onSeeked: PlyrCallback = useCallback(
+    (event) => {
+      if (initialized) {
+        socket?.emit('player:seek', { time: event.detail.plyr.currentTime });
+      }
+    },
+    [socket]
+  );
+  const onTimeUpdate: PlyrCallback = useCallback(
+    (event) => {
+      socket?.emit('player:time', { time: event.detail.plyr.currentTime });
+    },
+    [socket]
+  );
+
+  return (
+    <div className={styles.playerContainer}>
+      <PlyrWrapper
+        onPause={onPause}
+        onPlay={onPlay}
+        onSeeked={onSeeked}
+        onTimeUpdate={onTimeUpdate}
+        ref={ref}
+      />
+    </div>
+  );
+};
 
 export default Player;
