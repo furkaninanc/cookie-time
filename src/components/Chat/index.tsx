@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -80,12 +81,14 @@ const Chat: React.FC = () => {
 
   return (
     <div className={styles.chatContainer}>
-      <div className={styles.brandContainer}>
-        <div className={styles.logoContainer}>
-          <img alt={"It's cookie o'clock somewhere!"} src={logo} />
+      <Link to="/">
+        <div className={styles.brandContainer}>
+          <div className={styles.logoContainer}>
+            <img alt={"It's cookie o'clock somewhere!"} src={logo} />
+          </div>
+          <div className={styles.titleContainer}>Cookie Time</div>
         </div>
-        <div className={styles.titleContainer}>Cookie Time</div>
-      </div>
+      </Link>
       <div className={styles.messagesContainer} ref={messagesContainerRef}>
         {messages &&
           messages.map(({ content, id, owner }) => (
