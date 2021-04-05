@@ -10,6 +10,13 @@ const HomePage: React.FC = () => {
   const { auth, setAuth } = useAuthContext();
   const history = useHistory();
 
+  const joinRoom = () => history.push(`/${auth.room}`);
+  const onKeyDown = (event: any) => {
+    if (event.keyCode === 13) {
+      joinRoom();
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
@@ -26,6 +33,7 @@ const HomePage: React.FC = () => {
                 setAuth({ ...auth, username: event.target.value });
                 localStorage.setItem('username', event.target.value);
               }}
+              onKeyDown={onKeyDown}
               placeholder="Kullanıcı adı"
               value={auth.username}
             />
@@ -36,12 +44,13 @@ const HomePage: React.FC = () => {
                 setAuth({ ...auth, room: event.target.value });
                 localStorage.setItem('room', event.target.value);
               }}
+              onKeyDown={onKeyDown}
               placeholder="Oda adı"
               value={auth.room}
             />
           </div>
           <div className={styles.formElementContainer}>
-            <Button onClick={() => history.push(`/${auth.room}`)}>Katıl</Button>
+            <Button onClick={() => joinRoom()}>Katıl</Button>
           </div>
         </div>
       </div>
