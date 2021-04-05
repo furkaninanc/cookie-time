@@ -43,16 +43,6 @@ const PlyrWrapper: React.FC<IPlyrWrapper> = memo(
             muted: true,
           }}
           ref={ref}
-          source={{
-            type: 'video',
-            sources: [
-              {
-                src: 'https://cdn.plyr.io/static/blank.mp4',
-                type: 'video/mp4',
-                size: 720,
-              },
-            ],
-          }}
         />
       </>
     );
