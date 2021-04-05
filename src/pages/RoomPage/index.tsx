@@ -55,7 +55,7 @@ const RoomPage: React.FC = () => {
 
   useEffect(() => {
     setSocket(
-      socketIOClient('http://localhost:7284', {
+      socketIOClient('wss://cookie-time-test.herokuapp.com', {
         transports: ['websocket'],
         upgrade: false,
         query: {
