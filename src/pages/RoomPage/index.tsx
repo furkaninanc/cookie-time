@@ -11,6 +11,7 @@ import { useAuthContext } from '../../contexts/AuthContext';
 import logo from '../../logo.svg';
 import styles from './RoomPage.module.scss';
 
+let initialized = false;
 let preventEmit = false;
 
 interface IMessage {
@@ -37,8 +38,6 @@ const RoomPage: React.FC = () => {
       },
     ])
   );
-  const [playing, setPlaying] = useState<boolean>(false);
-  const [initialTime, setInitialTime] = useState<number>(0);
 
   const addMessage = ({ content, id, owner }: IMessage) => {
     setMessages((prevMessages) => {
@@ -75,13 +74,6 @@ const RoomPage: React.FC = () => {
   }, [auth, room]);
 
   useEffect(() => {
-    if (playing && initialTime && ref?.current?.plyr?.currentTime) {
-      ref.current.plyr.currentTime = initialTime;
-      setInitialTime(0);
-    }
-  }, [initialTime, playing]);
-
-  useEffect(() => {
     socket?.on('join', ({ time, video }) => {
       setSources(
         JSON.stringify([
@@ -93,7 +85,13 @@ const RoomPage: React.FC = () => {
         ])
       );
 
-      setInitialTime(time);
+      const timer = setInterval(() => {
+        if (ref?.current?.plyr && ref.current.plyr.buffered > 0) {
+          ref.current.plyr.currentTime = time;
+          initialized = true;
+          clearInterval(timer);
+        }
+      }, 100);
     });
 
     socket?.on('disconnect', () => {
@@ -163,8 +161,6 @@ const RoomPage: React.FC = () => {
     }
   };
   const onPause: PlyrCallback = useCallback(() => {
-    setPlaying(false);
-
     if (!preventEmit) {
       socket?.emit('player:state', { state: 0 });
     }
@@ -172,8 +168,6 @@ const RoomPage: React.FC = () => {
     preventEmit = false;
   }, [socket]);
   const onPlay: PlyrCallback = useCallback(() => {
-    setPlaying(true);
-
     if (!preventEmit) {
       socket?.emit('player:state', { state: 1 });
     }
@@ -182,7 +176,9 @@ const RoomPage: React.FC = () => {
   }, [socket]);
   const onSeeked: PlyrCallback = useCallback(
     (event) => {
-      socket?.emit('player:seek', { time: event.detail.plyr.currentTime });
+      if (initialized) {
+        socket?.emit('player:seek', { time: event.detail.plyr.currentTime });
+      }
     },
     [socket]
   );
