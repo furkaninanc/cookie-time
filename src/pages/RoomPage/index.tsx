@@ -23,6 +23,7 @@ const RoomPage: React.FC = () => {
   const { room }: { room: string } = useParams();
   const history = useHistory();
   const ref = useRef<HTMLPlyrVideoElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { auth } = useAuthContext();
   const [socket, setSocket] = useState<Socket>();
   const [message, setMessage] = useState<string>('');
@@ -50,6 +51,10 @@ const RoomPage: React.FC = () => {
 
       return newMessages;
     });
+
+    if (messagesContainerRef?.current) {
+      messagesContainerRef.current.scrollTop = Number.MAX_SAFE_INTEGER;
+    }
   };
 
   const addSystemMessage = useCallback((content: string) => {
@@ -207,7 +212,7 @@ const RoomPage: React.FC = () => {
           </div>
           <div className={styles.titleContainer}>Cookie Time</div>
         </div>
-        <div className={styles.messagesContainer}>
+        <div className={styles.messagesContainer} ref={messagesContainerRef}>
           {messages &&
             messages.map(({ content, id, owner }) => (
               <div className={styles.messageContainer} key={id}>
