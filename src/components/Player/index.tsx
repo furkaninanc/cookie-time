@@ -51,13 +51,13 @@ const Player: React.FC = () => {
       history.push('/');
     });
 
-    socket?.on('player:state', ({ state }) => {
+    socket?.on('player:state', async ({ state }) => {
       preventEmit = true;
 
       if (state === 1) {
-        ref?.current?.plyr?.play();
+        await ref?.current?.plyr?.play();
       } else {
-        ref?.current?.plyr?.pause();
+        await ref?.current?.plyr?.pause();
       }
 
       preventEmit = false;
