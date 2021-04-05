@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { HTMLPlyrVideoElement, PlyrCallback } from 'plyr-react';
 import socketIOClient, { Socket } from 'socket.io-client';
@@ -20,6 +20,7 @@ interface IMessage {
 }
 
 const RoomPage: React.FC = () => {
+  const { room }: { room: string } = useParams();
   const history = useHistory();
   const ref = useRef<HTMLPlyrVideoElement>(null);
   const { auth } = useAuthContext();
@@ -61,12 +62,12 @@ const RoomPage: React.FC = () => {
         transports: ['websocket'],
         upgrade: false,
         query: {
-          room: auth.room,
+          room,
           username: auth.username,
         },
       })
     );
-  }, [auth]);
+  }, [auth, room]);
 
   useEffect(() => {
     if (playing && initialTime && ref?.current?.plyr?.currentTime) {
