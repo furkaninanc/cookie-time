@@ -81,21 +81,27 @@ const Player: React.FC = () => {
     socket?.on('player:video', ({ video }) => setSource(video));
   }, [history, socket]);
 
-  const onPause: PlyrCallback = useCallback(() => {
-    if (!preventStateEmit) {
-      socket?.emit('player:state', { state: 0 });
-    }
+  const onPause: PlyrCallback = useCallback(
+    (event) => {
+      if (!preventStateEmit && !event.detail.plyr.seeking) {
+        socket?.emit('player:state', { state: 0 });
+      }
 
-    preventStateEmit = false;
-  }, [socket]);
+      preventStateEmit = false;
+    },
+    [socket]
+  );
 
-  const onPlay: PlyrCallback = useCallback(() => {
-    if (!preventStateEmit) {
-      socket?.emit('player:state', { state: 1 });
-    }
+  const onPlay: PlyrCallback = useCallback(
+    (event) => {
+      if (!preventStateEmit && !event.detail.plyr.seeking) {
+        socket?.emit('player:state', { state: 1 });
+      }
 
-    preventStateEmit = false;
-  }, [socket]);
+      preventStateEmit = false;
+    },
+    [socket]
+  );
 
   const onSeeked: PlyrCallback = useCallback(
     (event) => {
