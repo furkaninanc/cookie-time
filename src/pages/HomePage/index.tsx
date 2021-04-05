@@ -7,8 +7,8 @@ import logo from '../../logo.svg';
 import styles from './HomePage.module.scss';
 
 const HomePage: React.FC = () => {
-  const { auth, setAuth } = useAuthContext();
   const history = useHistory();
+  const { auth, setAuth } = useAuthContext();
 
   const joinRoom = () => history.push(`/${auth.room}`);
   const onKeyDown = (event: any) => {

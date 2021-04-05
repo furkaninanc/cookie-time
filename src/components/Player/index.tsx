@@ -82,6 +82,7 @@ const Player: React.FC = () => {
 
     preventEmit = false;
   }, [socket]);
+
   const onPlay: PlyrCallback = useCallback(() => {
     if (!preventEmit) {
       socket?.emit('player:state', { state: 1 });
@@ -89,6 +90,7 @@ const Player: React.FC = () => {
 
     preventEmit = false;
   }, [socket]);
+
   const onSeeked: PlyrCallback = useCallback(
     (event) => {
       if (initialized) {
@@ -97,6 +99,7 @@ const Player: React.FC = () => {
     },
     [socket]
   );
+
   const onTimeUpdate: PlyrCallback = useCallback(
     (event) => {
       socket?.emit('player:time', { time: event.detail.plyr.currentTime });
