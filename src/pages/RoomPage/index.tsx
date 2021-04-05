@@ -30,7 +30,7 @@ const RoomPage: React.FC = () => {
   return (
     <SocketContext.Provider value={{ socket, setSocket }}>
       <div className={styles.wrapper}>
-        <Player />
+        {socket && <Player />}
         <Chat />
       </div>
     </SocketContext.Provider>
