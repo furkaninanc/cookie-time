@@ -2,8 +2,15 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: var(--s-90);
   min-width: var(--s-90);
   background-color: var(--default);
+}
+
+@media only screen and (max-width: 720px) {
+  .chatContainer {
+    width: 100%;
+  }
 }
 
 .brandContainer {
@@ -48,6 +55,7 @@
 }
 
 .messageContent {
+  word-break: break-all;
   color: var(--white);
 }
 
