@@ -14,6 +14,13 @@ const RoomPage: React.FC = () => {
   const { room }: { room: string } = useParams();
   const [socket, setSocket] = useState<Socket>();
 
+  useEffect(
+    () => () => {
+      socket?.disconnect();
+    },
+    [socket]
+  );
+
   useEffect(() => {
     setSocket(
       socketIOClient(`${process.env.REACT_APP_SOCKET_ENDPOINT}`, {
