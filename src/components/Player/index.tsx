@@ -40,6 +40,7 @@ const Player: React.FC<IPlayer> = memo(
       <>
         <Plyr
           options={{
+            autoplay: true,
             muted: true,
           }}
           ref={ref}
