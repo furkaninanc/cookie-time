@@ -48,6 +48,8 @@ a {
   height: 100%;
 }
 
-a {
-  text-decoration: none;
+@media only screen and (max-width: 720px) {
+  .plyr {
+    height: unset;
+  }
 }
