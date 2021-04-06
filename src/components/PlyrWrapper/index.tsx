@@ -7,6 +7,7 @@ interface IPlyrWrapper {
   onPause: PlyrCallback;
   onPlay: PlyrCallback;
   onRateChange: PlyrCallback;
+  onReady: PlyrCallback;
   onSeeked: PlyrCallback;
   onTimeUpdate: PlyrCallback;
   ref: RefObject<HTMLPlyrVideoElement>;
@@ -14,7 +15,10 @@ interface IPlyrWrapper {
 
 const PlyrWrapper: React.FC<IPlyrWrapper> = memo(
   forwardRef(
-    ({ onPause, onPlay, onRateChange, onSeeked, onTimeUpdate }, ref) => {
+    (
+      { onPause, onPlay, onRateChange, onReady, onSeeked, onTimeUpdate },
+      ref
+    ) => {
       useEffect(() => {
         // @ts-ignore
         const plyr = ref?.current?.plyr;
@@ -22,12 +26,14 @@ const PlyrWrapper: React.FC<IPlyrWrapper> = memo(
         const pauseEvent: PlyrCallback = onPause;
         const playEvent: PlyrCallback = onPlay;
         const rateChangeEvent: PlyrCallback = onRateChange;
+        const readyEvent: PlyrCallback = onReady;
         const seekedEvent: PlyrCallback = onSeeked;
         const timeUpdateEvent: PlyrCallback = onTimeUpdate;
 
         plyr?.on('pause', pauseEvent);
         plyr?.on('play', playEvent);
         plyr?.on('ratechange', rateChangeEvent);
+        plyr?.on('ready', readyEvent);
         plyr?.on('seeked', seekedEvent);
         plyr?.on('timeupdate', timeUpdateEvent);
 
@@ -35,10 +41,11 @@ const PlyrWrapper: React.FC<IPlyrWrapper> = memo(
           plyr?.off('pause', pauseEvent);
           plyr?.off('play', playEvent);
           plyr?.off('ratechange', rateChangeEvent);
+          plyr?.off('ready', readyEvent);
           plyr?.off('seeked', seekedEvent);
           plyr?.off('timeupdate', timeUpdateEvent);
         };
-      }, [onPause, onPlay, onRateChange, onSeeked, onTimeUpdate, ref]);
+      }, [onPause, onPlay, onRateChange, onReady, onSeeked, onTimeUpdate, ref]);
 
       return (
         <>
