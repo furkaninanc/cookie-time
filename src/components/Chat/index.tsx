@@ -42,6 +42,12 @@ const Chat: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    socket?.on('join', () => {
+      addSystemMessage(`Odaya katıldın`);
+      addSystemMessage(
+        `!video komutu ile videoyu değiştirebilirsin (!video video-url)`
+      );
+    });
     socket?.on('message:receive', ({ content, id, owner }) =>
       addMessage({ content, id, owner })
     );
