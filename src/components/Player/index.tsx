@@ -68,7 +68,7 @@ const Player: React.FC = () => {
       setVideo(video);
 
       const timer = setInterval(() => {
-        if (ref?.current?.plyr && ref.current.plyr.buffered > 0) {
+        if (ref?.current?.plyr && ref.current.plyr.duration > 0) {
           initialized = true;
           setState(state);
           setTime(time);
