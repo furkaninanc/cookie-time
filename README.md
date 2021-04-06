@@ -14,6 +14,8 @@
     <a href="https://github.com/furkaninanc/cookie-time/issues">Report Bug</a>
     ·
     <a href="https://github.com/furkaninanc/cookie-time/issues">Request Feature</a>
+    ·
+    <a href="https://github.com/furkaninanc/cookie-time-backend">Backend Repository</a>
   </p>
 
 </p>
