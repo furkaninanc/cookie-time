@@ -37,7 +37,7 @@ const Player: React.FC = () => {
 
   const setTime = (time: number) => {
     if (
-      ref?.current?.plyr?.currentTime &&
+      ref?.current?.plyr &&
       Math.abs(ref.current.plyr.currentTime - time) > 2
     ) {
       preventSeekEmit = true;
@@ -66,15 +66,11 @@ const Player: React.FC = () => {
   useEffect(() => {
     socket?.on('join', ({ speed, state, time, video }) => {
       setVideo(video);
-      setState(state);
 
       const timer = setInterval(() => {
-        if (
-          ref?.current?.plyr &&
-          ref.current.plyr.source === video &&
-          ref.current.plyr.buffered > 0
-        ) {
+        if (ref?.current?.plyr && ref.current.plyr.buffered > 0) {
           initialized = true;
+          setState(state);
           setTime(time);
           setSpeed(speed);
           clearInterval(timer);
