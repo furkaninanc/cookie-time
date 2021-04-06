@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useAuthContext } from '../../contexts/AuthContext';
+import github from '../../github.png';
 import logo from '../../logo.svg';
 import styles from './HomePage.module.scss';
 
@@ -52,6 +53,11 @@ const HomePage: React.FC = () => {
           <div className={styles.formElementContainer}>
             <Button onClick={() => joinRoom()}>Katıl</Button>
           </div>
+        </div>
+        <div className={styles.footerContainer}>
+          <a href="https://github.com/furkaninanc/cookie-time">
+            <img alt="Project repo" src={github} />
+          </a>
         </div>
       </div>
     </div>
