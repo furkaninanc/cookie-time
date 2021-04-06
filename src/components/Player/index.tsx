@@ -18,24 +18,6 @@ const Player: React.FC = () => {
   const ref = useRef<HTMLPlyrVideoElement>(null);
   const { socket } = useSocketContext();
 
-  const setSource = (video: string) => {
-    if (ref?.current?.plyr) {
-      const youtubeId = getVideoId(video);
-
-      ref.current.plyr.source = {
-        type: 'video',
-        sources: [
-          {
-            src: youtubeId || video,
-            ...(!youtubeId
-              ? { type: 'video/mp4', size: 720 }
-              : { provider: 'youtube' }),
-          },
-        ],
-      };
-    }
-  };
-
   const setSpeed = (speed: number) => {
     if (ref?.current?.plyr && ref.current.plyr.speed !== speed) {
       preventSpeedEmit = true;
@@ -53,9 +35,37 @@ const Player: React.FC = () => {
     }
   };
 
+  const setTime = (time: number) => {
+    if (
+      ref?.current?.plyr?.currentTime &&
+      Math.abs(ref.current.plyr.currentTime - time) > 2
+    ) {
+      preventSeekEmit = true;
+      ref.current.plyr.currentTime = time;
+    }
+  };
+
+  const setVideo = (video: string) => {
+    if (ref?.current?.plyr) {
+      const youtubeId = getVideoId(video);
+
+      ref.current.plyr.source = {
+        type: 'video',
+        sources: [
+          {
+            src: youtubeId || video,
+            ...(!youtubeId
+              ? { type: 'video/mp4', size: 720 }
+              : { provider: 'youtube' }),
+          },
+        ],
+      };
+    }
+  };
+
   useEffect(() => {
     socket?.on('join', ({ speed, state, time, video }) => {
-      setSource(video);
+      setVideo(video);
       setState(state);
 
       const timer = setInterval(() => {
@@ -64,9 +74,8 @@ const Player: React.FC = () => {
           ref.current.plyr.source === video &&
           ref.current.plyr.buffered > 0
         ) {
-          preventSeekEmit = true;
-          ref.current.plyr.currentTime = time;
           initialized = true;
+          setTime(time);
           setSpeed(speed);
           clearInterval(timer);
         }
@@ -74,22 +83,10 @@ const Player: React.FC = () => {
     });
 
     socket?.on('disconnect', () => history.push('/'));
-
     socket?.on('player:state', ({ state }) => setState(state));
-
-    socket?.on('player:seek', ({ time }) => {
-      if (
-        ref?.current?.plyr?.currentTime &&
-        Math.abs(ref.current.plyr.currentTime - time) > 2
-      ) {
-        preventSeekEmit = true;
-        ref.current.plyr.currentTime = time;
-      }
-    });
-
+    socket?.on('player:seek', ({ time }) => setTime(time));
     socket?.on('player:speed', ({ speed }) => setSpeed(speed));
-
-    socket?.on('player:video', ({ video }) => setSource(video));
+    socket?.on('player:video', ({ video }) => setVideo(video));
   }, [history, socket]);
 
   const onPause: PlyrCallback = useCallback(
@@ -116,10 +113,8 @@ const Player: React.FC = () => {
 
   const onRateChange: PlyrCallback = useCallback(
     (event) => {
-      if (initialized) {
-        if (!preventSpeedEmit) {
-          socket?.emit('player:speed', { speed: event.detail.plyr.speed });
-        }
+      if (initialized && !preventSpeedEmit) {
+        socket?.emit('player:speed', { speed: event.detail.plyr.speed });
       }
 
       preventSpeedEmit = false;
@@ -129,10 +124,8 @@ const Player: React.FC = () => {
 
   const onSeeked: PlyrCallback = useCallback(
     (event) => {
-      if (initialized) {
-        if (!preventSeekEmit) {
-          socket?.emit('player:seek', { time: event.detail.plyr.currentTime });
-        }
+      if (initialized && !preventSeekEmit) {
+        socket?.emit('player:seek', { time: event.detail.plyr.currentTime });
       }
 
       preventSeekEmit = false;
