@@ -122,6 +122,12 @@ const Player: React.FC = () => {
     [socket]
   );
 
+  const onReady: PlyrCallback = useCallback(() => {
+    if (ref?.current?.plyr) {
+      ref.current.plyr.muted = true;
+    }
+  }, []);
+
   const onSeeked: PlyrCallback = useCallback(
     (event) => {
       if (initialized && !preventSeekEmit) {
@@ -146,6 +152,7 @@ const Player: React.FC = () => {
         onPause={onPause}
         onPlay={onPlay}
         onRateChange={onRateChange}
+        onReady={onReady}
         onSeeked={onSeeked}
         onTimeUpdate={onTimeUpdate}
         ref={ref}
