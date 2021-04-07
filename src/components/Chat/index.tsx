@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useSocketContext } from '../../contexts/SocketContext';
 import logo from '../../images/logo.svg';
+import send from '../../images/send.svg';
+import Button from '../Button';
 import Input from '../Input';
 import styles from './Chat.module.scss';
 
@@ -75,16 +77,20 @@ const Chat: React.FC = () => {
     });
   }, [addSystemMessage, socket]);
 
+  const handleMessageSubmit = () => {
+    if (message.startsWith('!video ')) {
+      const [, video] = message.split('!video ');
+      socket?.emit('player:video', { video });
+    } else {
+      socket?.emit('message:send', { content: message });
+    }
+    setMessage('');
+  };
+
   const onChange = (event: any) => setMessage(event.target.value);
   const onKeyDown = (event: any) => {
     if (event.keyCode === 13) {
-      if (message.startsWith('!video ')) {
-        const [, video] = message.split('!video ');
-        socket?.emit('player:video', { video });
-      } else {
-        socket?.emit('message:send', { content: message });
-      }
-      setMessage('');
+      handleMessageSubmit();
     }
   };
 
@@ -107,14 +113,21 @@ const Chat: React.FC = () => {
             </div>
           ))}
       </div>
-      <div className={styles.newMessageContainer}>
-        <Input
-          className={styles.newMessage}
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-          placeholder="Bir mesaj gönder..."
-          value={message}
-        />
+      <div className={styles.footerContainer}>
+        <div className={styles.newMessageContainer}>
+          <Input
+            className={styles.newMessage}
+            onChange={onChange}
+            onKeyDown={onKeyDown}
+            placeholder="Bir mesaj gönder..."
+            value={message}
+          />
+        </div>
+        <div className={styles.sendContainer}>
+          <Button className={styles.send} onClick={handleMessageSubmit}>
+            <img alt="Mesajı gönder" className={styles.sendIcon} src={send} />
+          </Button>
+        </div>
       </div>
     </div>
   );

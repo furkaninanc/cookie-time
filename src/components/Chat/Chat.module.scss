@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  width: var(--s-90);
-  min-width: var(--s-90);
+  width: var(--s-100);
+  min-width: var(--s-100);
   background-color: var(--default);
 }
 
@@ -59,13 +59,29 @@
   color: var(--white);
 }
 
-.newMessageContainer {
-  min-height: var(--s-14);
+.footerContainer {
+  display: flex;
+  align-items: center;
+  padding: var(--s-3) var(--s-1);
   border-top: var(--s-quarter) solid var(--tertiary);
   background-color: var(--black);
 }
 
-.newMessage {
-  background-color: transparent;
+.newMessageContainer {
   width: 100%;
+  padding-right: var(--s-1);
+}
+
+.newMessage {
+  width: 100%;
+}
+
+.send {
+  height: var(--s-12);
+  width: var(--s-12);
+}
+
+.sendIcon {
+  height: var(--s-7);
+  width: var(--s-7);
 }
