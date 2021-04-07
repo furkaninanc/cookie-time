@@ -1,4 +1,7 @@
 .button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   height: var(--s-14);
   width: var(--s-80);
