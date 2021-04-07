@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useAuthContext } from '../../contexts/AuthContext';
-import github from '../../github.png';
-import logo from '../../logo.svg';
+import github from '../../images/github.png';
+import logo from '../../images/logo.svg';
 import styles from './HomePage.module.scss';
 
 const HomePage: React.FC = () => {

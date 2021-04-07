@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useSocketContext } from '../../contexts/SocketContext';
-import logo from '../../logo.svg';
+import logo from '../../images/logo.svg';
 import Input from '../Input';
 import styles from './Chat.module.scss';
 
