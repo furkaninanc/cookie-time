@@ -14,14 +14,42 @@
   }
 }
 
+.headerContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  height: var(--s-18);
+  border-bottom: var(--s-quarter) solid var(--secondary);
+  background-color: var(--black);
+}
+
+.headerSideContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: var(--s-18);
+}
+
+.membersButton {
+  height: var(--s-8);
+  width: auto;
+  font-size: var(--s-4);
+  font-weight: 600;
+  color: var(--black);
+}
+
+.membersButtonIcon {
+  height: var(--s-6);
+  width: var(--s-6);
+  margin-right: var(--s-1);
+}
+
 .brandContainer {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  height: var(--s-18);
-  border-bottom: var(--s-quarter) solid var(--secondary);
-  background-color: var(--black);
 }
 
 .logoContainer {
@@ -77,12 +105,12 @@
   width: 100%;
 }
 
-.send {
+.sendButton {
   height: var(--s-12);
   width: var(--s-12);
 }
 
-.sendIcon {
+.sendButtonIcon {
   height: var(--s-7);
   width: var(--s-7);
 }

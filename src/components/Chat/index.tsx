@@ -4,11 +4,17 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useSocketContext } from '../../contexts/SocketContext';
+import eye from '../../images/eye.svg';
 import logo from '../../images/logo.svg';
 import send from '../../images/send.svg';
 import Button from '../Button';
 import Input from '../Input';
 import styles from './Chat.module.scss';
+
+interface IMember {
+  time: number;
+  username: string;
+}
 
 interface IMessage {
   content: string;
@@ -19,6 +25,7 @@ interface IMessage {
 const Chat: React.FC = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const { socket } = useSocketContext();
+  const [members, setMembers] = useState<IMember[]>([]);
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<IMessage[]>([]);
 
@@ -43,22 +50,43 @@ const Chat: React.FC = () => {
     addMessage({ content, id: uuidv4(), owner: '' });
   }, []);
 
+  const addMember = (username: string) => {
+    setMembers((prevMembers) => {
+      const newMembers = [...prevMembers];
+      newMembers.push({
+        time: 0,
+        username,
+      });
+
+      return newMembers;
+    });
+  };
+
+  const removeMember = (username: string) => {
+    setMembers((prevMembers) =>
+      prevMembers.filter((member) => member.username !== username)
+    );
+  };
+
   useEffect(() => {
-    socket?.on('join', () => {
+    socket?.on('join', ({ members: membersOnJoin }: { members: IMember[] }) => {
       addSystemMessage(`Odaya katıldın`);
       addSystemMessage(
         `!video komutu ile videoyu değiştirebilirsin (!video video-url)`
       );
+      setMembers(membersOnJoin);
     });
     socket?.on('message:receive', ({ content, id, owner }) =>
       addMessage({ content, id, owner })
     );
-    socket?.on('member:join', ({ username }) =>
-      addSystemMessage(`${username} odaya katıldı`)
-    );
-    socket?.on('member:leave', ({ username }) =>
-      addSystemMessage(`${username} odadan ayrıldı`)
-    );
+    socket?.on('member:join', ({ username }) => {
+      addMember(username);
+      addSystemMessage(`${username} odaya katıldı`);
+    });
+    socket?.on('member:leave', ({ username }) => {
+      removeMember(username);
+      addSystemMessage(`${username} odadan ayrıldı`);
+    });
     socket?.on('player:video', ({ username }) =>
       addSystemMessage(`${username} videoyu değiştirdi`)
     );
@@ -96,14 +124,30 @@ const Chat: React.FC = () => {
 
   return (
     <div className={styles.chatContainer}>
-      <Link to="/">
+      <div className={styles.headerContainer}>
+        <div className={styles.headerSideContainer} />
         <div className={styles.brandContainer}>
           <div className={styles.logoContainer}>
             <img alt={"It's cookie o'clock somewhere!"} src={logo} />
           </div>
-          <div className={styles.titleContainer}>Cookie Time</div>
+          <Link to="/">
+            <div className={styles.titleContainer}>Cookie Time</div>
+          </Link>
         </div>
-      </Link>
+        <div className={styles.headerSideContainer}>
+          <Button
+            className={styles.membersButton}
+            onClick={handleMessageSubmit}
+          >
+            <img
+              alt="İzleyici sayısı"
+              className={styles.membersButtonIcon}
+              src={eye}
+            />{' '}
+            {members.length}
+          </Button>
+        </div>
+      </div>
       <div className={styles.messagesContainer} ref={messagesContainerRef}>
         {messages &&
           messages.map(({ content, id, owner }) => (
@@ -123,9 +167,13 @@ const Chat: React.FC = () => {
             value={message}
           />
         </div>
-        <div className={styles.sendContainer}>
-          <Button className={styles.send} onClick={handleMessageSubmit}>
-            <img alt="Mesajı gönder" className={styles.sendIcon} src={send} />
+        <div className={styles.sendButtonContainer}>
+          <Button className={styles.sendButton} onClick={handleMessageSubmit}>
+            <img
+              alt="Mesajı gönder"
+              className={styles.sendButtonIcon}
+              src={send}
+            />
           </Button>
         </div>
       </div>
