@@ -12,6 +12,7 @@ let initialized = false;
 let preventSeekEmit = false;
 let preventSpeedEmit = false;
 let preventStateEmit = false;
+let lastTime = 0;
 
 const Player: React.FC = () => {
   const history = useHistory();
@@ -137,7 +138,11 @@ const Player: React.FC = () => {
 
   const onTimeUpdate: PlyrCallback = useCallback(
     (event) => {
-      socket?.emit('player:time', { time: event.detail.plyr.currentTime });
+      const time = parseInt(`${event.detail.plyr.currentTime}`, 10);
+      if (Math.abs(lastTime - time) >= 1) {
+        socket?.emit('player:time', { time: event.detail.plyr.currentTime });
+        lastTime = time;
+      }
     },
     [socket]
   );
