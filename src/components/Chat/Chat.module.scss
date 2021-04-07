@@ -5,6 +5,7 @@
   width: var(--s-100);
   min-width: var(--s-100);
   background-color: var(--default);
+  border-left: var(--s-quarter) solid var(--secondary);
 }
 
 @media only screen and (max-width: 720px) {
@@ -19,7 +20,7 @@
   justify-content: center;
   align-items: center;
   height: var(--s-18);
-  border-bottom: var(--s-quarter) solid var(--tertiary);
+  border-bottom: var(--s-quarter) solid var(--secondary);
   background-color: var(--black);
 }
 
@@ -62,8 +63,8 @@
 .footerContainer {
   display: flex;
   align-items: center;
-  padding: var(--s-3) var(--s-1);
-  border-top: var(--s-quarter) solid var(--tertiary);
+  padding: var(--s-3) var(--s-2);
+  border-top: var(--s-quarter) solid var(--secondary);
   background-color: var(--black);
 }
 
