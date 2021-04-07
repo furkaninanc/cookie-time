@@ -25,6 +25,12 @@
   background-color: var(--black);
 }
 
+@media only screen and (max-width: 720px) {
+  .headerContainer {
+    border-top: var(--s-quarter) solid var(--secondary);
+  }
+}
+
 .headerSideContainer {
   display: flex;
   flex-direction: row;
