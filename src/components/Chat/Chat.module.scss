@@ -11,6 +11,8 @@
 @media only screen and (max-width: 720px) {
   .chatContainer {
     width: 100%;
+    min-width: 100%;
+    border-left: unset;
   }
 }
 
