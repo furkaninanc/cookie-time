@@ -40,20 +40,6 @@
   width: var(--s-18);
 }
 
-.membersButton {
-  height: var(--s-8);
-  width: auto;
-  font-size: var(--s-4);
-  font-weight: 600;
-  color: var(--black);
-}
-
-.membersButtonIcon {
-  height: var(--s-6);
-  width: var(--s-6);
-  margin-right: var(--s-1);
-}
-
 .brandContainer {
   display: flex;
   flex-direction: row;
@@ -70,6 +56,53 @@
 .titleContainer {
   color: var(--primary);
   font-size: var(--s-7);
+}
+
+.membersButton {
+  height: var(--s-8);
+  width: auto;
+  font-size: var(--s-4);
+  font-weight: 600;
+  color: var(--black);
+}
+
+.membersButtonIcon {
+  height: var(--s-6);
+  width: var(--s-6);
+  margin-right: var(--s-1);
+}
+
+.membersWrapper {
+  display: none;
+  background-color: var(--secondary);
+  border-radius: 0 0 var(--s-3) var(--s-3);
+}
+
+.membersWrapper.active {
+  display: block;
+}
+
+.membersContainer {
+  padding: var(--s-4) var(--s-10);
+  max-height: var(--s-64);
+  overflow: auto;
+}
+
+.memberContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s-2);
+  color: var(--white);
+}
+
+.memberContainer:last-of-type {
+  margin-bottom: unset;
+}
+
+.memberTime {
+  color: var(--tertiary);
 }
 
 .messagesContainer {
