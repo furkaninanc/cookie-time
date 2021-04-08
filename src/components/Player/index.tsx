@@ -8,12 +8,12 @@ import { getVideoId } from '../../utils/youtube';
 import PlyrWrapper from '../PlyrWrapper';
 import styles from './Player.module.scss';
 
-let firstReady = true;
-let initialized = false;
-let lastTime = 0;
-let preventSeekEmit = false;
-let preventSpeedEmit = false;
-let preventStateEmit = false;
+let firstReady: boolean;
+let initialized: boolean;
+let lastTime: number;
+let preventSeekEmit: boolean;
+let preventSpeedEmit: boolean;
+let preventStateEmit: boolean;
 
 const Player: React.FC = () => {
   const history = useHistory();
@@ -67,6 +67,13 @@ const Player: React.FC = () => {
   };
 
   useEffect(() => {
+    firstReady = true;
+    initialized = false;
+    lastTime = 0;
+    preventSeekEmit = false;
+    preventSpeedEmit = false;
+    preventStateEmit = false;
+
     socket?.on('join', ({ speed, state, time, video }) => {
       setVideo(video);
 
@@ -87,27 +94,21 @@ const Player: React.FC = () => {
     socket?.on('player:video', ({ video }) => setVideo(video));
   }, [history, socket]);
 
-  const onPause: PlyrCallback = useCallback(
-    (event) => {
-      if (initialized && !preventStateEmit && !event.detail.plyr.seeking) {
-        socket?.emit('player:state', { state: 0 });
-      }
+  const onPause: PlyrCallback = useCallback(() => {
+    if (!preventStateEmit) {
+      socket?.emit('player:state', { state: 0 });
+    }
 
-      preventStateEmit = false;
-    },
-    [socket]
-  );
+    preventStateEmit = false;
+  }, [socket]);
 
-  const onPlay: PlyrCallback = useCallback(
-    (event) => {
-      if (initialized && !preventStateEmit && !event.detail.plyr.seeking) {
-        socket?.emit('player:state', { state: 1 });
-      }
+  const onPlay: PlyrCallback = useCallback(() => {
+    if (!preventStateEmit) {
+      socket?.emit('player:state', { state: 1 });
+    }
 
-      preventStateEmit = false;
-    },
-    [socket]
-  );
+    preventStateEmit = false;
+  }, [socket]);
 
   const onRateChange: PlyrCallback = useCallback(
     (event) => {
@@ -160,7 +161,7 @@ const Player: React.FC = () => {
     (event) => {
       const time = parseInt(`${event.detail.plyr.currentTime}`, 10);
 
-      if (initialized && Math.abs(lastTime - time) >= 1) {
+      if (Math.abs(lastTime - time) >= 1) {
         socket?.emit('player:time', { time: event.detail.plyr.currentTime });
         lastTime = time;
       }
