@@ -10,10 +10,10 @@ import styles from './Player.module.scss';
 
 let firstReady = true;
 let initialized = false;
+let lastTime = 0;
 let preventSeekEmit = false;
 let preventSpeedEmit = false;
 let preventStateEmit = false;
-let lastTime = 0;
 
 const Player: React.FC = () => {
   const history = useHistory();
@@ -51,6 +51,7 @@ const Player: React.FC = () => {
     if (ref?.current?.plyr) {
       const youtubeId = getVideoId(video);
 
+      initialized = false;
       ref.current.plyr.source = {
         type: 'video',
         sources: [
@@ -70,8 +71,7 @@ const Player: React.FC = () => {
       setVideo(video);
 
       const timer = setInterval(() => {
-        if (ref?.current?.plyr && ref.current.plyr.duration > 0) {
-          initialized = true;
+        if (initialized) {
           setState(state);
           setTime(time);
           setSpeed(speed);
@@ -89,7 +89,7 @@ const Player: React.FC = () => {
 
   const onPause: PlyrCallback = useCallback(
     (event) => {
-      if (!preventStateEmit && !event.detail.plyr.seeking) {
+      if (initialized && !preventStateEmit && !event.detail.plyr.seeking) {
         socket?.emit('player:state', { state: 0 });
       }
 
@@ -100,7 +100,7 @@ const Player: React.FC = () => {
 
   const onPlay: PlyrCallback = useCallback(
     (event) => {
-      if (!preventStateEmit && !event.detail.plyr.seeking) {
+      if (initialized && !preventStateEmit && !event.detail.plyr.seeking) {
         socket?.emit('player:state', { state: 1 });
       }
 
@@ -125,6 +125,23 @@ const Player: React.FC = () => {
       ref.current.plyr.muted = true;
     }
 
+    const initializeChecker = setInterval(() => {
+      if (ref?.current?.plyr) {
+        if (
+          // @ts-ignore
+          ref.current.plyr.source === 'https://cdn.plyr.io/static/blank.mp4'
+        ) {
+          clearInterval(initializeChecker);
+          return;
+        }
+
+        if (ref.current.plyr.duration > 0) {
+          initialized = true;
+          clearInterval(initializeChecker);
+        }
+      }
+    }, 100);
+
     firstReady = false;
   }, []);
 
@@ -142,7 +159,8 @@ const Player: React.FC = () => {
   const onTimeUpdate: PlyrCallback = useCallback(
     (event) => {
       const time = parseInt(`${event.detail.plyr.currentTime}`, 10);
-      if (Math.abs(lastTime - time) >= 1) {
+
+      if (initialized && Math.abs(lastTime - time) >= 1) {
         socket?.emit('player:time', { time: event.detail.plyr.currentTime });
         lastTime = time;
       }
