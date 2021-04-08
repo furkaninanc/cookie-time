@@ -8,6 +8,7 @@ import { getVideoId } from '../../utils/youtube';
 import PlyrWrapper from '../PlyrWrapper';
 import styles from './Player.module.scss';
 
+let firstReady = true;
 let initialized = false;
 let preventSeekEmit = false;
 let preventSpeedEmit = false;
@@ -120,9 +121,11 @@ const Player: React.FC = () => {
   );
 
   const onReady: PlyrCallback = useCallback(() => {
-    if (ref?.current?.plyr) {
+    if (ref?.current?.plyr && firstReady) {
       ref.current.plyr.muted = true;
     }
+
+    firstReady = false;
   }, []);
 
   const onSeeked: PlyrCallback = useCallback(
