@@ -95,8 +95,8 @@ const Chat: React.FC = () => {
     socket?.on('member:time', ({ time, username }) => {
       updateMemberTime(username, time);
     });
-    socket?.on('player:video', ({ username }) =>
-      addSystemMessage(`${username} videoyu değiştirdi`)
+    socket?.on('player:buffer', ({ username }) =>
+      addSystemMessage(`${username} videonun yüklenmesini bekliyor`)
     );
     socket?.on('player:seek', ({ username }) =>
       addSystemMessage(`${username} video zamanını değiştirdi`)
@@ -104,13 +104,9 @@ const Chat: React.FC = () => {
     socket?.on('player:speed', ({ speed, username }) =>
       addSystemMessage(`${username} video hızını ${speed}x olarak değiştirdi`)
     );
-    socket?.on('player:state', ({ state, username }) => {
-      if (state === 1) {
-        addSystemMessage(`${username} videoyu başlattı`);
-      } else {
-        addSystemMessage(`${username} videoyu durdurdu`);
-      }
-    });
+    socket?.on('player:video', ({ username }) =>
+      addSystemMessage(`${username} videoyu değiştirdi`)
+    );
   }, [addSystemMessage, socket]);
 
   const handleMessageSubmit = () => {

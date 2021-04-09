@@ -88,6 +88,7 @@ const Player: React.FC = () => {
     });
 
     socket?.on('disconnect', () => history.push('/'));
+    socket?.on('player:buffer', () => setState(0));
     socket?.on('player:state', ({ state }) => setState(state));
     socket?.on('player:seek', ({ time }) => setTime(time));
     socket?.on('player:speed', ({ speed }) => setSpeed(speed));
@@ -103,6 +104,14 @@ const Player: React.FC = () => {
   }, [socket]);
 
   const onPlay: PlyrCallback = useCallback(() => {
+    if (!preventStateEmit) {
+      socket?.emit('player:state', { state: 1 });
+    }
+
+    preventStateEmit = false;
+  }, [socket]);
+
+  const onPlaying: PlyrCallback = useCallback(() => {
     if (!preventStateEmit) {
       socket?.emit('player:state', { state: 1 });
     }
@@ -169,15 +178,23 @@ const Player: React.FC = () => {
     [socket]
   );
 
+  const onWaiting: PlyrCallback = useCallback(() => {
+    if (initialized) {
+      socket?.emit('player:buffer');
+    }
+  }, [socket]);
+
   return (
     <div className={styles.playerContainer}>
       <PlyrWrapper
         onPause={onPause}
         onPlay={onPlay}
+        onPlaying={onPlaying}
         onRateChange={onRateChange}
         onReady={onReady}
         onSeeked={onSeeked}
         onTimeUpdate={onTimeUpdate}
+        onWaiting={onWaiting}
         ref={ref}
       />
     </div>
