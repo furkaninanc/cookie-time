@@ -30,6 +30,8 @@
   --s-80: 320px;
   --s-90: 360px;
   --s-100: 400px;
+
+  --plyr-color-main: var(--primary);
 }
 
 body {
